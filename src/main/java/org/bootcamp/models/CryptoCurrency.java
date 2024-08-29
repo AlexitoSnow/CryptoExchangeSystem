@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public final class CryptoCurrency {
+    private String cryptoID;
     private final String displayName;
     private final String shorthandSymbol;
     private BigDecimal currentValue;
@@ -12,6 +13,11 @@ public final class CryptoCurrency {
         this.displayName = displayName;
         this.currentValue = currentValue;
         this.shorthandSymbol = shorthandSymbol;
+        generateCryptoID();
+    }
+
+    private void generateCryptoID() {
+        cryptoID = shorthandSymbol + '@' + shorthandSymbol.hashCode();
     }
 
     public String getDisplayName() {
@@ -39,11 +45,11 @@ public final class CryptoCurrency {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CryptoCurrency that)) return false;
-        return Objects.equals(displayName, that.displayName) && Objects.equals(shorthandSymbol, that.shorthandSymbol);
+        return Objects.equals(cryptoID, that.cryptoID);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(displayName, shorthandSymbol);
+        return Objects.hashCode(cryptoID);
     }
 }
