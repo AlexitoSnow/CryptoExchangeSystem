@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class AccountService {
-    private List<User> users;
+    private final List<User> users;
     private static AccountService instance;
     private User user;
 

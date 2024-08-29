@@ -5,6 +5,8 @@ import org.bootcamp.services.AccountService;
 import org.bootcamp.services.CryptoCurrencyService;
 
 public class CryptoExchangeApp {
+    //TODO: IMPLEMENTAR OBSERVER PARA LAS FLUCTUACIONES
+    //TODO: IMPLEMENTAR STRATEGY PARA LA SELECCIÓN DE OPCIONES
 
     public static void main(String[] args) {
         init();
