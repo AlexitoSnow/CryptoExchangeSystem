@@ -1,10 +1,9 @@
 package org.bootcamp.views;
 
-import org.bootcamp.models.CryptoCurrency;
 import org.bootcamp.models.Wallet;
 
+import java.math.BigDecimal;
 import java.util.InputMismatchException;
-import java.util.Map;
 
 public class HomeView extends View {
 
@@ -36,5 +35,15 @@ public class HomeView extends View {
     public void showWallet(Wallet wallet) {
         showInfo("My Wallet");
         showSuccessMessage(wallet.toString());
+    }
+
+    public BigDecimal getAmountMoneyInput() {
+        requestMessage("Amount: $");
+        try {
+            return scanner.nextBigDecimal();
+        } catch (InputMismatchException e) {
+            scanner.nextLine();
+            return BigDecimal.ZERO;
+        }
     }
 }
