@@ -4,6 +4,8 @@ import org.bootcamp.Router;
 import org.bootcamp.services.AccountService;
 import org.bootcamp.views.HomeView;
 
+import java.math.BigDecimal;
+
 public class HomeController extends Controller {
     private final HomeView view;
     private final AccountService service;
@@ -56,6 +58,17 @@ public class HomeController extends Controller {
     }
 
     private void depositAction() {
-
+        BigDecimal amount = view.getAmountMoneyInput();
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            view.showError("Enter positive numbers only");
+        } else {
+            boolean response = service.depositFiatMoney(amount);
+            if (response) {
+                view.showSuccessMessage("Balance updated!");
+                showWallet();
+            } else {
+                view.showError("Unexpected error while updating your balance");
+            }
+        }
     }
 }
