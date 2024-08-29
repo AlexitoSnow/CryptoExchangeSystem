@@ -1,5 +1,6 @@
 package org.bootcamp.models;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class User {
@@ -66,6 +67,10 @@ public class User {
 
     public Wallet getWallet() {
         return wallet;
+    }
+
+    public void depositFiatMoney(BigDecimal amount) {
+        wallet.addFiatMoney(amount);
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.bootcamp.services;
 
 import org.bootcamp.models.User;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,14 @@ public class AccountService {
             instance = new AccountService();
         }
         return instance;
+    }
+
+    public boolean depositFiatMoney(BigDecimal amount) {
+        if (user != null) {
+            user.depositFiatMoney(amount);
+            return true;
+        }
+        return false;
     }
 
     /**
