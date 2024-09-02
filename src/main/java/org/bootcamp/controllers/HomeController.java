@@ -5,6 +5,8 @@ import org.bootcamp.services.AccountService;
 import org.bootcamp.views.HomeView;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HomeController extends Controller {
     private final HomeView view;
@@ -27,12 +29,20 @@ public class HomeController extends Controller {
                 showWallet();
                 break;
             case 3:
-                buyAction();
+                //Buy from exchange
+                marketAction(0);
                 break;
             case 4:
-                sellAction();
+                //Buy order
+                marketAction(1);
+                break;
             case 5:
+                //Selling order
+                marketAction(2);
+                break;
+            case 6:
                 logout();
+                break;
             default:
                 view.showError("Invalid option. Please try again.");
         }
@@ -45,16 +55,14 @@ public class HomeController extends Controller {
         Router.navigateTo(Router.ROOT);
     }
 
+    private void marketAction(int marketAction) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("marketAction", marketAction);
+        Router.navigateTo(Router.MARKET, parameters);
+    }
+
     private void showWallet() {
         view.showWallet(service.getCurrentUser().getWallet());
-    }
-
-    private void sellAction() {
-
-    }
-
-    private void buyAction() {
-
     }
 
     private void depositAction() {
