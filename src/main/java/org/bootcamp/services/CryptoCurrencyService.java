@@ -2,14 +2,18 @@ package org.bootcamp.services;
 
 import org.bootcamp.models.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class CryptoCurrencyService {
     private final Map<CryptoCurrency, BigDecimal> cryptoCurrencies;
+    private final List<MarketOrder> orders;
     private static CryptoCurrencyService instance;
 
     private CryptoCurrencyService() {
-        this.cryptoCurrencies = new HashMap<>();
+        cryptoCurrencies = new HashMap<>();
+        orders = new ArrayList<>();
         CryptoCurrency bitcoin = new CryptoCurrency("Bitcoin", "BTC", new BigDecimal(50000));
         CryptoCurrency ethereum = new CryptoCurrency("Ethereum", "ETH", new BigDecimal(3000));
         cryptoCurrencies.put(bitcoin, new BigDecimal(100));
@@ -27,6 +31,60 @@ public class CryptoCurrencyService {
         return Collections.unmodifiableMap(cryptoCurrencies);
     }
 
+    /**
+     * Checks user fiat money availability
+     * Checks cryptocurrency availability
+     * @param user
+     * @param cryptoCurrency
+     * @param quantity
+     * @return
+     */
+    public void buyFromExchange(User user, CryptoCurrency cryptoCurrency, BigDecimal quantity) throws CryptoCurrencyException, AccountServiceException {
+        if (cryptoCurrencies.get(cryptoCurrency).compareTo(quantity) >= 0) {
+            BigDecimal currentCryptoValue = cryptoCurrency.getCurrentValue();
+            // retira la cantidad en fiat money de la billetera del usuario si es posible
+            boolean success = user.getWallet().subtractFiatMoney(currentCryptoValue);
+            if (success) {
+                user.getWallet().rechargeCryptoCurrency(cryptoCurrency, quantity);
+                subtractCryptoCurrency(cryptoCurrency, quantity);
+            } else {
+                throw new AccountServiceException("User has not enough funds to complete the transaction.");
+            }
+        } else {
+            throw new CryptoCurrencyException("Exchange has not enough funds to complete the transaction.");
+        }
+    }
+
+    private void subtractCryptoCurrency(CryptoCurrency cryptoCurrency, BigDecimal value) {
+        BigDecimal oldValue = cryptoCurrencies.get(cryptoCurrency);
+        System.out.println(oldValue);
+        cryptoCurrencies.replace(cryptoCurrency, oldValue.subtract(value));
+        System.out.println(cryptoCurrencies.get(cryptoCurrency));
+    }
+
+    public void putOrder(MarketOrder order) {
+        orders.add(order);
+    }
+
+    public void matchOrders() {
+        Stream<MarketOrder> sellingOrders = orders.stream().filter((order) -> {
+            return order.getOrderType() == OrderType.SELLING;
+        });
+        Stream<MarketOrder> buyOrders = orders.stream().filter((order) -> {
+            return order.getOrderType() == OrderType.BUY;
+        });
+
+    }
+
+    /**
+     * Las criptomonedas fluctuan cada 6 segundos
+     * BTC fluctua cada 6 segundos aprox, puede:
+     * bajar (entre 0.0008 o 0.0001)%, subir (entre 0.0001 o 0.0007)% o mantenerse
+     * ETH fluctua cada 7 segundos aprox, puede:
+     * bajar (entre 0.0004 o 0.0001)%, subir (entre 0.0001 o 0.0012)% o mantenerse
+     * Para calcular, hay que tener registrado el precio original, en base a ese
+     * se realiza el precio de fluctuación
+     */
     public void fluctuateCryptoCurrencyValues() {
         Random random = new Random();
         //RootView view = new RootView();
