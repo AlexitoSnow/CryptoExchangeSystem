@@ -46,8 +46,9 @@ public abstract class View {
         try {
             return scanner.nextInt();
         } catch (InputMismatchException e) {
-            scanner.nextLine();
             return INVALID_CHOICE;
+        } finally {
+            scanner.nextLine();
         }
     }
 
