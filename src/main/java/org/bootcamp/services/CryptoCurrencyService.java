@@ -4,7 +4,6 @@ import org.bootcamp.models.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class CryptoCurrencyService {
     private final Map<CryptoCurrency, BigDecimal> cryptoCurrencies;
@@ -31,14 +30,6 @@ public class CryptoCurrencyService {
         return Collections.unmodifiableMap(cryptoCurrencies);
     }
 
-    /**
-     * Checks user fiat money availability
-     * Checks cryptocurrency availability
-     * @param user
-     * @param cryptoCurrency
-     * @param quantity
-     * @return
-     */
     public void buyFromExchange(User user, CryptoCurrency cryptoCurrency, BigDecimal quantity) throws CryptoCurrencyException, AccountServiceException {
         if (cryptoCurrencies.get(cryptoCurrency).compareTo(quantity) >= 0) {
             BigDecimal currentCryptoValue = cryptoCurrency.getCurrentValue();
@@ -67,12 +58,40 @@ public class CryptoCurrencyService {
     }
 
     public void matchOrders() {
-        Stream<MarketOrder> sellingOrders = orders.stream().filter((order) -> {
-            return order.getOrderType() == OrderType.SELLING;
-        });
-        Stream<MarketOrder> buyOrders = orders.stream().filter((order) -> {
-            return order.getOrderType() == OrderType.BUY;
-        });
+        List<MarketOrder> sellingOrders = orders.stream().filter((order) -> order.getOrderType() == OrderType.SELLING).sorted().toList();
+        List<MarketOrder> buyOrders = orders.stream().filter((order) -> order.getOrderType() == OrderType.BUY).sorted().toList();
+
+        for (MarketOrder buyOrder : buyOrders) {
+            boolean match = false;
+            Iterator<MarketOrder> sellingOrdersIterator = sellingOrders.iterator();
+            while (!match && sellingOrdersIterator.hasNext()){
+                MarketOrder sellingOrder = sellingOrdersIterator.next();
+                if (!buyOrder.getUser().equals(sellingOrder.getUser())){
+                    boolean exactAmount = sellingOrder.getAmount().compareTo(buyOrder.getAmount()) == 0;
+                    boolean sellingPriceMatches = sellingOrder.getPrice().compareTo(buyOrder.getPrice()) <= 0;
+                    if (exactAmount && sellingPriceMatches) {
+                        System.out.println("Matched found");
+                        System.out.print(buyOrder.getOrderID());
+                        System.out.println(" with " + sellingOrder.getOrderID());
+                        match = true;
+                        Transaction buyerTransaction = new Transaction(TransactionAction.BUY, buyOrder.getCryptoCurrency(), buyOrder.getAmount(), sellingOrder.getPrice());
+                        Transaction sellerTransaction = new Transaction(TransactionAction.SELL, sellingOrder.getCryptoCurrency(), sellingOrder.getAmount(), sellingOrder.getPrice());
+                        sellingOrder.getUser().recordTransaction(sellerTransaction);
+                        buyOrder.getUser().recordTransaction(buyerTransaction);
+                        sellingOrder.getUser().depositFiatMoney(sellingOrder.getPrice());
+                        buyOrder.getUser().rechargeCryptoCurrency(buyOrder.getCryptoCurrency(), buyOrder.getAmount());
+                        if (sellingOrder.getPrice().compareTo(buyOrder.getPrice()) < 0) {
+                            buyOrder.getUser().depositFiatMoney(buyOrder.getPrice().subtract(sellingOrder.getPrice()));
+                            System.out.println("Funds restored");
+                        }
+                        System.out.println("Transaction completed");
+                        orders.remove(buyOrder);
+                        orders.remove(sellingOrder);
+                    }
+                }
+            }
+        }
+
 
     }
 
