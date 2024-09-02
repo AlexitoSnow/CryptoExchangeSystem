@@ -1,6 +1,7 @@
 package org.bootcamp.models;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
@@ -11,23 +12,24 @@ public class Transaction {
     private final BigDecimal amount;
     private final BigDecimal price;
     private String transactionID;
-    private final User seller;
-    private final User buyer;
+    private final LocalDateTime dateTime;
 
-    public Transaction(TransactionAction action, CryptoCurrency cryptoCurrency, BigDecimal amount, BigDecimal price, User seller, User buyer) {
-        assert (action != null && cryptoCurrency != null && amount != null && price != null && seller != null && buyer != null);
+    public Transaction(TransactionAction action, CryptoCurrency cryptoCurrency, BigDecimal amount, BigDecimal price) {
         this.action = action;
         this.cryptoCurrency = cryptoCurrency;
         this.amount = amount;
         this.price = price;
-        this.seller = seller;
-        this.buyer = buyer;
+        this.dateTime = LocalDateTime.now();
         generateTransactionID();
     }
 
     private void generateTransactionID() {
-        String epochSecond = String.valueOf(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
-        transactionID = seller.getUserID() + "@" + epochSecond + "@" + buyer.getUserID();
+        String epochSecond = String.valueOf(dateTime.toEpochSecond(ZoneOffset.UTC));
+        transactionID = epochSecond + "@" + action.name() + "@" + cryptoCurrency.getShorthandSymbol();
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
     public TransactionAction getAction() {
@@ -50,14 +52,6 @@ public class Transaction {
         return transactionID;
     }
 
-    public User getSeller() {
-        return seller;
-    }
-
-    public User getBuyer() {
-        return buyer;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -72,14 +66,10 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction{" +
-                "action=" + action +
-                ", cryptoCurrency=" + cryptoCurrency.getDisplayName() +
-                ", amount=" + amount +
-                ", price=" + price +
-                ", transactionID='" + transactionID + '\'' +
-                ", seller=" + seller.getUserID() +
-                ", buyer=" + buyer.getUserID() +
-                '}';
+        return String.format("%s\t %s\t %s\t %s",
+                action.name(),
+                cryptoCurrency.getShorthandSymbol(),
+                amount.setScale(2, RoundingMode.HALF_UP).toString(),
+                price.setScale(2, RoundingMode.HALF_UP).toString());
     }
 }
