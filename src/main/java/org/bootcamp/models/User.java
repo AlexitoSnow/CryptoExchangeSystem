@@ -1,6 +1,8 @@
 package org.bootcamp.models;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class User {
@@ -9,6 +11,7 @@ public class User {
     private String password;
     private String userID;
     private final Wallet wallet;
+    private List<Transaction> transactions;
 
     public User(String name, String email, String password) {
         assert(name != null && email != null && password != null);
@@ -16,7 +19,16 @@ public class User {
         this.email = email;
         this.password = password;
         wallet = new Wallet();
+        transactions = new ArrayList<>();
         generateUserID();
+    }
+
+    public void recordTransaction(Transaction transaction) {
+        transactions.add(transaction);
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
     }
 
     private void generateUserID() {
@@ -69,8 +81,20 @@ public class User {
         return wallet;
     }
 
+    public boolean subtractFiatMoney(BigDecimal amount) {
+        return wallet.subtractFiatMoney(amount);
+    }
+
+    public boolean subtractCryptoCurrency(CryptoCurrency cryptoCurrency, BigDecimal quantity) {
+        return wallet.subtractCryptoCurrency(cryptoCurrency, quantity);
+    }
+
     public void depositFiatMoney(BigDecimal amount) {
         wallet.addFiatMoney(amount);
+    }
+
+    public void rechargeCryptoCurrency(CryptoCurrency cryptoCurrency, BigDecimal quantity) {
+        wallet.rechargeCryptoCurrency(cryptoCurrency, quantity);
     }
 
     @Override
