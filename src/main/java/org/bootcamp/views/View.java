@@ -1,5 +1,7 @@
 package org.bootcamp.views;
 
+import java.math.BigDecimal;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public abstract class View {
@@ -9,7 +11,7 @@ public abstract class View {
     protected static final String INFO_CODE = "\u001B[34m";
     public static final int INVALID_CHOICE = -1;
 
-    protected final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
 
     public void showError(String errorMessage) {
         System.out.println(ERROR_CODE + errorMessage + DEFAULT_CODE);
@@ -29,6 +31,33 @@ public abstract class View {
 
     public void close() {
         scanner.close();
+    }
+
+    public BigDecimal getBigDecimal() {
+        try {
+            return scanner.nextBigDecimal();
+        } catch (InputMismatchException e) {
+            scanner.nextLine();
+            return BigDecimal.ZERO;
+        }
+    }
+
+    public Integer getChoice() {
+        try {
+            return scanner.nextInt();
+        } catch (InputMismatchException e) {
+            return INVALID_CHOICE;
+        } finally {
+            scanner.nextLine();
+        }
+    }
+
+    public String getString() {
+        return scanner.nextLine();
+    }
+
+    public String getString(boolean singleWord) {
+        return singleWord ? scanner.next() : getString();
     }
 
 }

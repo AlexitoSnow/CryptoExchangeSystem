@@ -1,9 +1,7 @@
 package org.bootcamp.views;
 
 import org.bootcamp.models.Wallet;
-
 import java.math.BigDecimal;
-import java.util.InputMismatchException;
 
 public class HomeView extends View {
 
@@ -13,7 +11,8 @@ public class HomeView extends View {
      * 2. Revisar billetera virtual
      * 3. Comprar por intercambio
      * 4. Enviar orden de compra
-     * 5. Cerrar sesión
+     * 5. Enviar orden de venta
+     * 6. Cerrar sesión
      * @return opción escogida
      */
     public int getUserChoice() {
@@ -21,15 +20,11 @@ public class HomeView extends View {
         showInfo("1. Deposit money");
         showInfo("2. View wallet balance");
         showInfo("3. Buy from exchange");
-        showInfo("4. Place sell order");
-        showInfo("5. Logout");
+        showInfo("4. Place buy order");
+        showInfo("5. Place sell order");
+        showInfo("6. Logout");
         System.out.print("Enter your choice: ");
-        try {
-            return scanner.nextInt();
-        } catch (InputMismatchException e) {
-            scanner.nextLine();
-            return INVALID_CHOICE;
-        }
+        return getChoice();
     }
 
     public void showWallet(Wallet wallet) {
@@ -39,11 +34,7 @@ public class HomeView extends View {
 
     public BigDecimal getAmountMoneyInput() {
         requestMessage("Amount: $");
-        try {
-            return scanner.nextBigDecimal();
-        } catch (InputMismatchException e) {
-            scanner.nextLine();
-            return BigDecimal.ZERO;
-        }
+        return getBigDecimal();
     }
+
 }
