@@ -1,6 +1,7 @@
 package org.bootcamp.models;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 
 public final class CryptoCurrency {
@@ -8,10 +9,12 @@ public final class CryptoCurrency {
     private final String displayName;
     private final String shorthandSymbol;
     private BigDecimal currentValue;
+    private final BigDecimal originalValue;
 
-    public CryptoCurrency(String displayName, String shorthandSymbol, BigDecimal currentValue) {
+    public CryptoCurrency(String displayName, String shorthandSymbol, BigDecimal originalValue) {
         this.displayName = displayName;
-        this.currentValue = currentValue;
+        this.originalValue = originalValue;
+        this.currentValue = originalValue;
         this.shorthandSymbol = shorthandSymbol;
         generateCryptoID();
     }
@@ -28,17 +31,21 @@ public final class CryptoCurrency {
         return currentValue;
     }
 
+    public BigDecimal getOriginalValue() {
+        return originalValue;
+    }
+
     public String getShorthandSymbol() {
         return shorthandSymbol;
     }
 
-    public void updateValue(BigDecimal newValue) {
+    public void updateCurrentValue(BigDecimal newValue) {
         currentValue = newValue;
     }
 
     @Override
     public String toString() {
-        return displayName + '(' + shorthandSymbol + ')' + ": " + currentValue;
+        return displayName + '(' + shorthandSymbol + ')' + ": " + currentValue.setScale(2, RoundingMode.HALF_UP);
     }
 
     @Override
