@@ -8,6 +8,7 @@ import org.bootcamp.services.CryptoCurrencyService;
 import org.bootcamp.views.MarketView;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class MarketController extends Controller{
@@ -28,33 +29,59 @@ public class MarketController extends Controller{
         User user = accountService.getCurrentUser();
         List<CryptoCurrency> cryptoCurrencies = user.getWallet().getMyCryptoCurrencies().keySet().stream().toList();
         CryptoCurrency selected = view.getCryptoCurrencyType(cryptoCurrencies);
-        MarketOrder marketOrder;
         if (selected != null) {
+            view.showInfo("Current Price: " + selected.getShorthandSymbol() + " (" + selected.getCurrentValue() + ")");
+            view.showError("Price up to date at " + LocalDateTime.now());
+
             BigDecimal quantity = view.getQuantityCryptoCurrencyInput();
-            BigDecimal price;
             switch (marketAction) {
                 //Buy from Exchange
                 case 0:
-                    try {
-                        cryptoCurrencyService.buyFromExchange(user, selected, quantity);
-                        view.showSuccessMessage("+" + quantity + " " + selected.getShorthandSymbol() + " added successfully");
-                    } catch (CryptoCurrencyException | AccountServiceException e) {
-                        view.showError(e.getMessage());
-                    }
+                    buyFromExchange(user, selected, quantity);
                     break;
-                    // Buy Order
+                // Buy Order
                 case 1:
-                    price = view.getPurchasingPriceInput();
-                    marketOrder = new MarketOrder(OrderType.BUY, user, selected, quantity, price);
+                    placeBuyOrder(user, selected, quantity);
                     break;
                 // Selling Order
                 case 2:
-                    price = view.getSellingPriceInput();
-                    marketOrder = new MarketOrder(OrderType.SELLING, user, selected, quantity, price);
+                    placeSellingOrder(user, selected, quantity);
+                    break;
             }
         } else {
             view.showError("Error: Not cryptocurrency selected!");
         }
         Router.navigateTo(Router.HOME);
+    }
+
+    private void buyFromExchange(User user, CryptoCurrency cryptoCurrency, BigDecimal quantity) {
+        try {
+            cryptoCurrencyService.buyFromExchange(user, cryptoCurrency, quantity);
+            view.showSuccessMessage("+" + quantity + " " + cryptoCurrency.getShorthandSymbol() + " added successfully");
+        } catch (CryptoCurrencyException | AccountServiceException e) {
+            view.showError(e.getMessage());
+        }
+    }
+
+    private void placeBuyOrder(User user, CryptoCurrency cryptoCurrency, BigDecimal quantity) {
+        BigDecimal price = view.getPurchasingPriceInput();
+        if (user.subtractFiatMoney(price)) {
+            MarketOrder marketOrder = new MarketOrder(OrderType.BUY, user, cryptoCurrency, quantity, price);
+            cryptoCurrencyService.putOrder(marketOrder);
+            view.showSuccessMessage("Buy order placed to the Market");
+        } else {
+            view.showError("User has not enough funds to complete the transaction.");
+        }
+    }
+
+    private void placeSellingOrder(User user, CryptoCurrency cryptoCurrency, BigDecimal quantity) {
+        BigDecimal price = view.getSellingPriceInput();
+        if (user.subtractCryptoCurrency(cryptoCurrency, quantity)) {
+            MarketOrder marketOrder = new MarketOrder(OrderType.SELLING, user, cryptoCurrency, quantity, price);
+            cryptoCurrencyService.putOrder(marketOrder);
+            view.showSuccessMessage("Selling order placed to the Market");
+        } else {
+            view.showError("User has not enough cryptocurrencies to complete the transaction.");
+        }
     }
 }
