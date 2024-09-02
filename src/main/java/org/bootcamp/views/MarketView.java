@@ -9,7 +9,7 @@ public class MarketView extends View {
         showInfo("Select the cryptocurrency type:");
         for (int i = 0; i < cryptoCurrencies.size(); i++){
             CryptoCurrency currency = cryptoCurrencies.get(i);
-            showInfo((i + 1) + ". " + currency.getDisplayName() + "(" + currency.getCurrentValue() + ")");
+            showInfo((i + 1) + ". " + currency.getDisplayName());
         }
         System.out.print("Enter your choice: ");
         int choice = getChoice();
@@ -21,11 +21,13 @@ public class MarketView extends View {
     }
 
     public BigDecimal getSellingPriceInput() {
+        showInfo("This is the price you are willing to accept");
         requestMessage("Selling Price: $");
         return getBigDecimal();
     }
 
     public BigDecimal getPurchasingPriceInput() {
+        showInfo("This is the maximum price you are willing to pay");
         requestMessage("Purchasing Price: $");
         return getBigDecimal();
     }
