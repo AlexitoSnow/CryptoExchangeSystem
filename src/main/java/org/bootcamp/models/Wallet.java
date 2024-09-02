@@ -28,27 +28,42 @@ public class Wallet {
         return myCryptoCurrencies;
     }
 
+    public boolean checkFunds(BigDecimal neededMoney) {
+        System.out.print("You want subtract ");
+        System.out.print(neededMoney);
+        System.out.print(" and you have ");
+        System.out.println(fiatMoney);
+        return fiatMoney.compareTo(neededMoney) > 0;
+    }
+
     public void addFiatMoney(BigDecimal value) {
         fiatMoney = fiatMoney.add(value);
     }
 
-    public void subtractFiatMoney(BigDecimal value) {
-        fiatMoney = fiatMoney.subtract(value);
+    /**
+     * Subtract fiat money if is available
+     * @param value to subtract
+     * @return true if the wallet has enough funds and subtract the value, false otherwise
+     */
+    public boolean subtractFiatMoney(BigDecimal value) {
+        if (checkFunds(value)) {
+            fiatMoney = fiatMoney.subtract(value);
+            return true;
+        }
+        return false;
     }
 
     /**
      * Recarga la criptomoneda con el valor indicado
      * @param cryptoCurrency que se encuentra en la billetera
      * @param quantity que se añadirá a la billetera
-     * @return true Si la criptomoneda estaba presente, false caso contrario
      */
-    public boolean rechargeCryptoCurrency(CryptoCurrency cryptoCurrency, BigDecimal quantity) {
+    public void rechargeCryptoCurrency(CryptoCurrency cryptoCurrency, BigDecimal quantity) {
         BigDecimal currentQuantity = myCryptoCurrencies.get(cryptoCurrency);
-        if (currentQuantity != null) {
+        if (quantity.compareTo(BigDecimal.ZERO) > 0) {
             BigDecimal newQuantity = currentQuantity.add(quantity);
             myCryptoCurrencies.replace(cryptoCurrency, newQuantity);
         }
-        return currentQuantity != null;
     }
 
     /**
