@@ -1,7 +1,5 @@
 package org.bootcamp.views;
 
-import java.util.InputMismatchException;
-
 public class RootView extends View {
 
     public int getUserChoice() {
@@ -11,27 +9,21 @@ public class RootView extends View {
         showInfo("2. Login");
         showInfo("3. Quit");
         System.out.print("Enter your choice: ");
-        try {
-            return scanner.nextInt();
-        } catch (InputMismatchException e) {
-            return INVALID_CHOICE;
-        } finally {
-            scanner.nextLine();
-        }
+        return getChoice();
     }
 
     public String getNameInput() {
         requestMessage("Name: ");
-        return scanner.nextLine();
+        return getString();
     }
 
     public String getPasswordInput() {
         requestMessage("Password: ");
-        return scanner.next();
+        return getString(true);
     }
 
     public String getEmailInput() {
         requestMessage("Email: ");
-        return scanner.next();
+        return getString(true);
     }
 }
