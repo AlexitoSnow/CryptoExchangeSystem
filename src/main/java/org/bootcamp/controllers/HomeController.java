@@ -1,11 +1,13 @@
 package org.bootcamp.controllers;
 
 import org.bootcamp.Router;
+import org.bootcamp.models.Transaction;
 import org.bootcamp.services.AccountService;
 import org.bootcamp.views.HomeView;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HomeController extends Controller {
@@ -29,18 +31,21 @@ public class HomeController extends Controller {
                 showWallet();
                 break;
             case 3:
+                showTransactionHistory();
+                break;
+            case 4:
                 //Buy from exchange
                 marketAction(0);
                 break;
-            case 4:
+            case 5:
                 //Buy order
                 marketAction(1);
                 break;
-            case 5:
+            case 6:
                 //Selling order
                 marketAction(2);
                 break;
-            case 6:
+            case 7:
                 logout();
                 break;
             default:
@@ -53,6 +58,16 @@ public class HomeController extends Controller {
         service.logout();
         view.showSuccessMessage("Logging out...");
         Router.navigateTo(Router.ROOT);
+    }
+
+    private void showTransactionHistory() {
+        List<Transaction> transactions = service.getCurrentUser().getTransactions();
+        if (transactions.isEmpty()){
+            view.showInfo("You don't have transactions yet!");
+        } else {
+            view.showInfo("Type\tCrypto\tAmount\tPrice");
+            transactions.forEach(transaction -> view.showInfo(transaction.toString()));
+        }
     }
 
     private void marketAction(int marketAction) {
@@ -70,13 +85,9 @@ public class HomeController extends Controller {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             view.showError("Enter positive numbers only");
         } else {
-            boolean response = service.depositFiatMoney(amount);
-            if (response) {
-                view.showSuccessMessage("Balance updated!");
-                showWallet();
-            } else {
-                view.showError("Unexpected error while updating your balance");
-            }
+            service.getCurrentUser().depositFiatMoney(amount);
+            view.showSuccessMessage("Balance updated!");
+            showWallet();
         }
     }
 }
