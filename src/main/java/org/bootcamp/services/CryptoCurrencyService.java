@@ -33,11 +33,12 @@ public class CryptoCurrencyService {
     public void buyFromExchange(User user, CryptoCurrency cryptoCurrency, BigDecimal quantity) throws CryptoCurrencyException, AccountServiceException {
         if (cryptoCurrencies.get(cryptoCurrency).compareTo(quantity) >= 0) {
             BigDecimal currentCryptoValue = cryptoCurrency.getCurrentValue();
-            // retira la cantidad en fiat money de la billetera del usuario si es posible
             boolean success = user.getWallet().subtractFiatMoney(currentCryptoValue.multiply(quantity));
             if (success) {
                 user.getWallet().rechargeCryptoCurrency(cryptoCurrency, quantity);
                 subtractCryptoCurrency(cryptoCurrency, quantity);
+                Transaction transaction = new Transaction(TransactionAction.EXCHANGE, cryptoCurrency, quantity, currentCryptoValue.multiply(quantity));
+                user.recordTransaction(transaction);
             } else {
                 throw new AccountServiceException("User has not enough funds to complete the transaction.");
             }
