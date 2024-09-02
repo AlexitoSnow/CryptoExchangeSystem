@@ -33,7 +33,15 @@ public class Wallet {
         System.out.print(neededMoney);
         System.out.print(" and you have ");
         System.out.println(fiatMoney);
-        return fiatMoney.compareTo(neededMoney) > 0;
+        return fiatMoney.compareTo(neededMoney) >= 0;
+    }
+
+    public boolean checkCryptoFunds(CryptoCurrency cryptoCurrency, BigDecimal neededQuantity) {
+        System.out.print("You want subtract ");
+        System.out.print(neededQuantity);
+        System.out.print(" " + cryptoCurrency.getShorthandSymbol() + " and you have ");
+        System.out.println(myCryptoCurrencies.get(cryptoCurrency));
+        return myCryptoCurrencies.get(cryptoCurrency).compareTo(neededQuantity) >= 0;
     }
 
     public void addFiatMoney(BigDecimal value) {
@@ -72,16 +80,13 @@ public class Wallet {
      * @param quantity que se descontará de la billetera
      * @return true Si la criptomoneda estaba presente, false caso contrario
      */
-    public boolean subtractCryptoCurrency(CryptoCurrency cryptoCurrency, BigDecimal quantity) throws CryptoCurrencyException {
-        BigDecimal currentQuantity = myCryptoCurrencies.get(cryptoCurrency);
-        if (currentQuantity != null) {
-            BigDecimal newQuantity = currentQuantity.subtract(quantity);
-            if (newQuantity.compareTo(BigDecimal.ZERO) < 0) {
-                throw new CryptoCurrencyException("Fondos Insuficientes para completar la transacción. Valores negativos no están permitidos");
-            }
-            myCryptoCurrencies.replace(cryptoCurrency, newQuantity);
+    public boolean subtractCryptoCurrency(CryptoCurrency cryptoCurrency, BigDecimal quantity) {
+        if (checkCryptoFunds(cryptoCurrency, quantity)) {
+            BigDecimal currentQuantity = myCryptoCurrencies.get(cryptoCurrency);
+            myCryptoCurrencies.replace(cryptoCurrency, currentQuantity.subtract(quantity));
+            return true;
         }
-        return currentQuantity != null;
+        return false;
     }
 
     @Override
