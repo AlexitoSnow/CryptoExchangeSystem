@@ -43,7 +43,7 @@ public class CryptoCurrencyService {
         if (cryptoCurrencies.get(cryptoCurrency).compareTo(quantity) >= 0) {
             BigDecimal currentCryptoValue = cryptoCurrency.getCurrentValue();
             // retira la cantidad en fiat money de la billetera del usuario si es posible
-            boolean success = user.getWallet().subtractFiatMoney(currentCryptoValue);
+            boolean success = user.getWallet().subtractFiatMoney(currentCryptoValue.multiply(quantity));
             if (success) {
                 user.getWallet().rechargeCryptoCurrency(cryptoCurrency, quantity);
                 subtractCryptoCurrency(cryptoCurrency, quantity);
