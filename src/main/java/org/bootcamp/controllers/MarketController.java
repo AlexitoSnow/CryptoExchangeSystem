@@ -34,22 +34,26 @@ public class MarketController extends Controller{
             view.showError("Price up to date at " + LocalDateTime.now());
 
             BigDecimal quantity = view.getQuantityCryptoCurrencyInput();
-            switch (marketAction) {
-                //Buy from Exchange
-                case 0:
-                    buyFromExchange(user, selected, quantity);
-                    break;
-                // Buy Order
-                case 1:
-                    placeBuyOrder(user, selected, quantity);
-                    break;
-                // Selling Order
-                case 2:
-                    placeSellingOrder(user, selected, quantity);
-                    break;
+            if (quantity.compareTo(BigDecimal.ZERO) > 0) {
+                switch (marketAction) {
+                    //Buy from Exchange
+                    case 0:
+                        buyFromExchange(user, selected, quantity);
+                        break;
+                    // Buy Order
+                    case 1:
+                        placeBuyOrder(user, selected, quantity);
+                        break;
+                    // Selling Order
+                    case 2:
+                        placeSellingOrder(user, selected, quantity);
+                        break;
+                }
+            } else {
+                view.showError("Quantity must be positive");
             }
         } else {
-            view.showError("Error: Not cryptocurrency selected!");
+            view.showError("Not cryptocurrency selected!");
         }
         Router.navigateTo(Router.HOME);
     }
@@ -65,23 +69,31 @@ public class MarketController extends Controller{
 
     private void placeBuyOrder(User user, CryptoCurrency cryptoCurrency, BigDecimal quantity) {
         BigDecimal price = view.getPurchasingPriceInput();
-        if (user.subtractFiatMoney(price)) {
-            MarketOrder marketOrder = new MarketOrder(OrderType.BUY, user, cryptoCurrency, quantity, price);
-            cryptoCurrencyService.putOrder(marketOrder);
-            view.showSuccessMessage("Buy order placed to the Market");
+        if (price.compareTo(BigDecimal.ZERO) > 0) {
+            if (user.subtractFiatMoney(price)) {
+                MarketOrder marketOrder = new MarketOrder(OrderType.BUY, user, cryptoCurrency, quantity, price);
+                cryptoCurrencyService.putOrder(marketOrder);
+                view.showSuccessMessage("Buy order placed to the Market");
+            } else {
+                view.showError("User has not enough funds to complete the transaction.");
+            }
         } else {
-            view.showError("User has not enough funds to complete the transaction.");
+            view.showError("Price must be positive");
         }
     }
 
     private void placeSellingOrder(User user, CryptoCurrency cryptoCurrency, BigDecimal quantity) {
         BigDecimal price = view.getSellingPriceInput();
-        if (user.subtractCryptoCurrency(cryptoCurrency, quantity)) {
-            MarketOrder marketOrder = new MarketOrder(OrderType.SELLING, user, cryptoCurrency, quantity, price);
-            cryptoCurrencyService.putOrder(marketOrder);
-            view.showSuccessMessage("Selling order placed to the Market");
+        if (price.compareTo(BigDecimal.ZERO) > 0) {
+            if (user.subtractCryptoCurrency(cryptoCurrency, quantity)) {
+                MarketOrder marketOrder = new MarketOrder(OrderType.SELLING, user, cryptoCurrency, quantity, price);
+                cryptoCurrencyService.putOrder(marketOrder);
+                view.showSuccessMessage("Selling order placed to the Market");
+            } else {
+                view.showError("User has not enough cryptocurrencies to complete the transaction.");
+            }
         } else {
-            view.showError("User has not enough cryptocurrencies to complete the transaction.");
+            view.showError("Price must be positive");
         }
     }
 }
