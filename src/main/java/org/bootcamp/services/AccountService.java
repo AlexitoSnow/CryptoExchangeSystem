@@ -23,14 +23,6 @@ public class AccountService {
         return instance;
     }
 
-    public boolean depositFiatMoney(BigDecimal amount) {
-        if (user != null) {
-            user.depositFiatMoney(amount);
-            return true;
-        }
-        return false;
-    }
-
     /**
      * Retorna el usuario registrado o que ha iniciado sesión recientemente
      * @return si está registrado, devuelve el usuario, o nulo caso contrario
