@@ -1,5 +1,5 @@
 package org.bootcamp.models;
 
 public enum TransactionAction {
-    SELL, BUY
+    SELL, BUY, EXCHANGE
 }
