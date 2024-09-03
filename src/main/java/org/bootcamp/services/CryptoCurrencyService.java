@@ -1,12 +1,18 @@
 package org.bootcamp.services;
 
 import org.bootcamp.models.*;
+import org.bootcamp.views.ExchangeServiceSubscriber;
+
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class CryptoCurrencyService {
     private final Map<CryptoCurrency, BigDecimal> cryptoCurrencies;
     private static CryptoCurrencyService instance;
+    private final List<ExchangeServiceSubscriber> exchangeServiceSubscribers;
 
     private CryptoCurrencyService() {
         cryptoCurrencies = new HashMap<>();
@@ -14,6 +20,24 @@ public class CryptoCurrencyService {
         CryptoCurrency ethereum = new CryptoCurrency("Ethereum", "ETH", new BigDecimal(3000));
         cryptoCurrencies.put(bitcoin, new BigDecimal(100));
         cryptoCurrencies.put(ethereum, new BigDecimal(500));
+        exchangeServiceSubscribers = new ArrayList<>();
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+        Runnable tarea = this::fluctuateCryptoCurrencyValues;
+
+        executor.scheduleAtFixedRate(tarea, 5, 5, TimeUnit.SECONDS);
+    }
+
+    public void subscribe(ExchangeServiceSubscriber exchangeServiceSubscriber) {
+        exchangeServiceSubscribers.add(exchangeServiceSubscriber);
+    }
+
+    public void unSubscribe(ExchangeServiceSubscriber exchangeServiceSubscriber) {
+        exchangeServiceSubscribers.remove(exchangeServiceSubscriber);
+    }
+
+    public void notifySubscribers() {
+        exchangeServiceSubscribers.forEach(exchangeServiceSubscriber -> exchangeServiceSubscriber.update(cryptoCurrencies.keySet().stream().toList()));
     }
 
     public static CryptoCurrencyService getInstance() {
@@ -74,6 +98,6 @@ public class CryptoCurrencyService {
             }
             cryptoCurrency.updateCurrentValue(newValue);
         }));
-        //view.showInfo("*".repeat(message.length()));
+        notifySubscribers();
     }
 }
