@@ -9,12 +9,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class CryptoCurrencyService {
+public class ExchangeService {
     private final Map<CryptoCurrency, BigDecimal> cryptoCurrencies;
-    private static CryptoCurrencyService instance;
+    private static ExchangeService instance;
     private final List<ExchangeServiceSubscriber> exchangeServiceSubscribers;
 
-    private CryptoCurrencyService() {
+    private ExchangeService() {
         cryptoCurrencies = new HashMap<>();
         CryptoCurrency bitcoin = new CryptoCurrency("Bitcoin", "BTC", new BigDecimal(50000));
         CryptoCurrency ethereum = new CryptoCurrency("Ethereum", "ETH", new BigDecimal(3000));
@@ -40,9 +40,9 @@ public class CryptoCurrencyService {
         exchangeServiceSubscribers.forEach(exchangeServiceSubscriber -> exchangeServiceSubscriber.update(cryptoCurrencies.keySet().stream().toList()));
     }
 
-    public static CryptoCurrencyService getInstance() {
+    public static ExchangeService getInstance() {
         if (instance == null) {
-            instance = new CryptoCurrencyService();
+            instance = new ExchangeService();
         }
         return instance;
     }

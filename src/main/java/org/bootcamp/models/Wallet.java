@@ -1,6 +1,6 @@
 package org.bootcamp.models;
 
-import org.bootcamp.services.CryptoCurrencyService;
+import org.bootcamp.services.ExchangeService;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ public class Wallet {
     public Wallet() {
         this.fiatMoney = BigDecimal.ZERO;
         this.myCryptoCurrencies = new HashMap<>();
-        CryptoCurrencyService service = CryptoCurrencyService.getInstance();
+        ExchangeService service = ExchangeService.getInstance();
         for (CryptoCurrency cryptoCurrency : service.getAvailableCryptoCurrencies().keySet()) {
             myCryptoCurrencies.put(cryptoCurrency, BigDecimal.ZERO);
         }

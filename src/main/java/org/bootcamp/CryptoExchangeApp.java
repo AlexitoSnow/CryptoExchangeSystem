@@ -1,10 +1,11 @@
 package org.bootcamp;
 
 import org.bootcamp.services.AccountService;
-import org.bootcamp.services.CryptoCurrencyService;
+import org.bootcamp.services.ExchangeService;
 import org.bootcamp.services.TradingService;
 
 public class CryptoExchangeApp {
+
 
     public static void main(String[] args) {
         init();
@@ -14,9 +15,10 @@ public class CryptoExchangeApp {
 
     /**
      * Inicializa los servicios de la plataforma
+     *
      */
     public static void init() {
-        CryptoCurrencyService.getInstance();
+        ExchangeService.getInstance();
         AccountService.getInstance();
         TradingService.getInstance();
     }
