@@ -25,18 +25,10 @@ public class Wallet {
     }
 
     public boolean checkFunds(BigDecimal neededMoney) {
-        System.out.print("You want subtract ");
-        System.out.print(neededMoney);
-        System.out.print(" and you have ");
-        System.out.println(fiatMoney);
         return fiatMoney.compareTo(neededMoney) >= 0;
     }
 
     public boolean checkCryptoFunds(CryptoCurrency cryptoCurrency, BigDecimal neededQuantity) {
-        System.out.print("You want subtract ");
-        System.out.print(neededQuantity);
-        System.out.print(" " + cryptoCurrency.getShorthandSymbol() + " and you have ");
-        System.out.println(myCryptoCurrencies.get(cryptoCurrency));
         return myCryptoCurrencies.get(cryptoCurrency).compareTo(neededQuantity) >= 0;
     }
 
