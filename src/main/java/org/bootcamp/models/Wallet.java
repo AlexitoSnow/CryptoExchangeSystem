@@ -20,10 +20,6 @@ public class Wallet {
         }
     }
 
-    public BigDecimal getFiatMoney() {
-        return fiatMoney;
-    }
-
     public Map<CryptoCurrency, BigDecimal> getMyCryptoCurrencies() {
         return myCryptoCurrencies;
     }

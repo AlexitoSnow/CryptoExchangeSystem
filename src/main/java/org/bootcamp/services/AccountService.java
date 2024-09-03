@@ -2,9 +2,7 @@ package org.bootcamp.services;
 
 import org.bootcamp.models.User;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class AccountService {
@@ -29,10 +27,6 @@ public class AccountService {
      */
     public User getCurrentUser() {
         return user;
-    }
-
-    public List<User> getUsers() {
-        return Collections.unmodifiableList(users);
     }
 
     /**
@@ -62,26 +56,16 @@ public class AccountService {
      * @return el usuario registrado, o null si no se encuentra
      */
     public User login(String email, String password) throws AccountServiceException {
-        if (isValidEmail(email)) {
-            int index = users.indexOf(new User("temp", email, password));
-            if (index >= 0) {
-                user = users.get(index);
-                return user;
-            }
-            throw new AccountServiceException("User not found");
+        int index = users.indexOf(new User("temp", email, password));
+        if (index >= 0) {
+            user = users.get(index);
+            return user;
         }
-        throw new AccountServiceException("Invalid email");
+        throw new AccountServiceException("User not found");
     }
 
     public void logout() {
         user = null;
     }
 
-    private boolean isStrongPassword(String password) {
-        return true;
-    }
-
-    private boolean isValidEmail(String email) {
-        return true;
-    }
 }
