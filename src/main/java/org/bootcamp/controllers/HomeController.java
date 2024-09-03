@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HomeController extends Controller {
+public class HomeController implements Controller, TradingServiceSubscriber {
     private final HomeView view;
     private final AccountService service;
 

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class MarketController extends Controller{
+public class MarketController implements Controller, ExchangeServiceSubscriber {
     private final MarketView view;
     private final CryptoCurrencyService cryptoCurrencyService;
     private final AccountService accountService;
