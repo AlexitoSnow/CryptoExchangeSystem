@@ -14,14 +14,50 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Controller class for managing market-related actions and interactions.
+ * Implements the Controller and ExchangeServiceSubscriber interfaces to handle
+ * user choices, market updates, and notifications.
+ * @see MarketView
+ * @see Controller
+ * @see ExchangeService
+ * @see ExchangeServiceSubscriber
+ */
 public class MarketController implements Controller, ExchangeServiceSubscriber {
+    /**
+     * The view associated with the market controller, responsible for user interactions in the market.
+     */
     private final MarketView view;
+
+    /**
+     * The exchange service used for buying and selling cryptocurrencies.
+     */
     private final ExchangeService exchangeService;
+
+    /**
+     * The trading service used for placing market orders.
+     */
     private final TradingService tradingService;
+
+    /**
+     * The account service used for user authentication and account management.
+     */
     private final AccountService accountService;
+
+    /**
+     * Flag indicating whether notifications for cryptocurrency fluctuations are enabled.
+     */
     private boolean showNotifications;
+
+    /**
+     * The singleton instance of the MarketController.
+     */
     public static MarketController instance;
 
+    /**
+     * Private constructor for the MarketController. Initializes the view, exchange service,
+     * account service, and trading service.
+     */
     private MarketController() {
         view = new MarketView();
         exchangeService = ExchangeService.getInstance();
@@ -29,6 +65,12 @@ public class MarketController implements Controller, ExchangeServiceSubscriber {
         tradingService = TradingService.getInstance();
     }
 
+    /**
+     * Returns the singleton instance of the MarketController. If the instance does not exist,
+     * it is created.
+     *
+     * @return the singleton instance of the MarketController
+     */
     public static MarketController getInstance() {
         if (instance == null) {
             instance = new MarketController();
@@ -36,6 +78,11 @@ public class MarketController implements Controller, ExchangeServiceSubscriber {
         return instance;
     }
 
+    /**
+     * Runs the main loop of the market controller, handling user choices for various market actions
+     * such as toggling notifications, buying from the exchange, placing buy and sell orders, and navigating back.
+     * @see Controller#run()
+     */
     @Override
     public void run() {
         int choice = view.getUserChoice();
@@ -61,11 +108,21 @@ public class MarketController implements Controller, ExchangeServiceSubscriber {
         router.navigateTo(Router.MARKET);
     }
 
+    /**
+     * Navigates back to the home screen and unsubscribes from the exchange service.
+     * @see ExchangeService
+     */
     private void back() {
         exchangeService.unSubscribe(this);
         router.navigateTo(Router.HOME);
     }
 
+    /**
+     * Toggles the state of notifications for cryptocurrency fluctuations.
+     * Subscribes or unsubscribes from the exchange service based on the new state,
+     * and displays the current notification status.
+     * @see ExchangeService
+     */
     private void toggleNotifications() {
         showNotifications = !showNotifications;
         if (showNotifications) {
@@ -77,6 +134,13 @@ public class MarketController implements Controller, ExchangeServiceSubscriber {
         }
     }
 
+    /**
+     * Buys cryptocurrency from the exchange for the current user. The method retrieves the user's available cryptocurrencies,
+     * prompts the user to select a cryptocurrency and specify the quantity, and then attempts to buy the cryptocurrency from the exchange.<br>
+     * If the purchase is successful, a success message is displayed; otherwise, an error message is shown.
+     * @see User
+     * @see CryptoCurrency
+     */
     private void buyFromExchange() {
         User user = accountService.getCurrentUser();
         List<CryptoCurrency> cryptoCurrencies = user.getWallet().getMyCryptoCurrencies().keySet().stream().toList();
@@ -100,6 +164,14 @@ public class MarketController implements Controller, ExchangeServiceSubscriber {
         }
     }
 
+    /**
+     * Places a buy order for the current user. The method retrieves the user's available cryptocurrencies,
+     * prompts the user to select a cryptocurrency and specify the quantity and price, and then attempts to place
+     * the order in the market. If the user has sufficient funds, the order is placed; otherwise, an error
+     * message is displayed.
+     * @see User
+     * @see CryptoCurrency
+     */
     private void placeBuyOrder() {
         User user = accountService.getCurrentUser();
         List<CryptoCurrency> cryptoCurrencies = user.getWallet().getMyCryptoCurrencies().keySet().stream().toList();
@@ -129,6 +201,14 @@ public class MarketController implements Controller, ExchangeServiceSubscriber {
         }
     }
 
+    /**
+     * Places a selling order for the current user. The method retrieves the user's available cryptocurrencies,
+     * prompts the user to select a cryptocurrency and specify the quantity and price, and then attempts to place
+     * the order in the market. If the user has sufficient cryptocurrency, the order is placed; otherwise, an error
+     * message is displayed.
+     * @see User
+     * @see CryptoCurrency
+     */
     private void placeSellingOrder() {
         User user = accountService.getCurrentUser();
         List<CryptoCurrency> cryptoCurrencies = user.getWallet().getMyCryptoCurrencies().keySet().stream().toList();
@@ -158,6 +238,14 @@ public class MarketController implements Controller, ExchangeServiceSubscriber {
         }
     }
 
+    /**
+     * Updates the view with the latest cryptocurrency market changes. Displays a message indicating
+     * that the market has changed, followed by the updated values of each cryptocurrency. If the current
+     * value of a cryptocurrency is higher than its original value, a success message is shown; otherwise,
+     * an error message is displayed.
+     *
+     * @param cryptoCurrencies the list of cryptocurrencies with updated values
+     */
     @Override
     public void update(List<CryptoCurrency> cryptoCurrencies) {
         String message = "*** THE MARKET HAS CHANGED ***";

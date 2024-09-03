@@ -6,15 +6,34 @@ import org.bootcamp.services.AccountService;
 import org.bootcamp.services.AccountServiceException;
 import org.bootcamp.views.RootView;
 
+/**
+ * Controller class for handling the root view and user interactions.
+ * Manages user registration, login, and navigation based on user choices.
+ * @see Controller
+ * @see RootView
+ */
 public class RootController implements Controller {
+    /**
+     * The view associated with the root controller, responsible for user interactions.
+     */
     private final RootView view;
+    /**
+     * The account service used for user registration and login operations.
+     */
     private final AccountService accountService;
 
+    /**
+     * Constructs a new RootController, initializing the view and account service.
+     */
     public RootController() {
         this.view = new RootView();
         accountService = AccountService.getInstance();
     }
 
+    /**
+     * Runs the main loop of the application, handling user choices for registration, login, and exit.
+     * @see Controller
+     */
     public void run() {
         int choice = view.getUserChoice();
         switch (choice) {
@@ -33,6 +52,10 @@ public class RootController implements Controller {
         }
     }
 
+    /**
+     * Handles the user registration process by collecting input from the view,
+     * registering the user through the account service, and navigating based on the result.
+     */
     private void register() {
         String name = view.getNameInput().trim();
         String email = view.getEmailInput().trim();
@@ -49,6 +72,10 @@ public class RootController implements Controller {
         }
     }
 
+    /**
+     * Handles the user login process by collecting input from the view,
+     * logging in the user through the account service, and navigating based on the result.
+     */
     private void login() {
         String email = view.getEmailInput().trim();
         String password = view.getPasswordInput().trim();
