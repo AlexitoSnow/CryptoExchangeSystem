@@ -10,10 +10,8 @@ public class HomeView extends View {
      * 1. Depositar dinero
      * 2. Revisar billetera virtual
      * 3. Revisar historial de transacciones
-     * 4. Comprar por intercambio
-     * 5. Enviar orden de compra
-     * 6. Enviar orden de venta
-     * 7. Cerrar sesión
+     * 4. Ir al mercado
+     * 5. Cerrar sesión
      * @return opción escogida
      */
     public int getUserChoice() {
@@ -21,10 +19,8 @@ public class HomeView extends View {
         showInfo("1. Deposit money");
         showInfo("2. View wallet balance");
         showInfo("3. View transaction history");
-        showInfo("4. Buy from exchange");
-        showInfo("5. Place buy order");
-        showInfo("6. Place sell order");
-        showInfo("7. Logout");
+        showInfo("4. Go to market");
+        showInfo("5. Logout");
         System.out.print("Enter your choice: ");
         return getChoice();
     }

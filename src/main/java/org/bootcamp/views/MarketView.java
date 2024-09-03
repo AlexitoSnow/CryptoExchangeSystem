@@ -5,6 +5,27 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class MarketView extends View {
+
+    /**
+     * Options:
+     * 0. Enable/Disable notifications about cryptocurrencies fluctuations (in this view)
+     * 1. Comprar por intercambio
+     * 2. Enviar orden de compra
+     * 3. Enviar orden de venta
+     * 4. Volver a mi cuenta
+     * @return opción escogida
+     */
+    public int getUserChoice() {
+        showInfo("Choose one option to continue:");
+        showInfo("0. Enable/Disable notifications about cryptocurrencies fluctuations (in this view)");
+        showInfo("1. Buy from exchange");
+        showInfo("2. Place buy order");
+        showInfo("3. Place sell order");
+        showInfo("4. Back to profile");
+        System.out.print("Enter your choice: ");
+        return getChoice();
+    }
+
     public CryptoCurrency getCryptoCurrencyType(List<CryptoCurrency> cryptoCurrencies) {
         showInfo("Select the cryptocurrency type:");
         for (int i = 0; i < cryptoCurrencies.size(); i++){
