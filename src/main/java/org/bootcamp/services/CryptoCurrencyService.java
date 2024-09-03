@@ -70,9 +70,7 @@ public class CryptoCurrencyService {
 
     private void subtractCryptoCurrency(CryptoCurrency cryptoCurrency, BigDecimal value) {
         BigDecimal oldValue = cryptoCurrencies.get(cryptoCurrency);
-        System.out.println(oldValue);
         cryptoCurrencies.replace(cryptoCurrency, oldValue.subtract(value));
-        System.out.println(cryptoCurrencies.get(cryptoCurrency));
     }
 
     /**
@@ -89,10 +87,8 @@ public class CryptoCurrencyService {
         cryptoCurrencies.forEach(((cryptoCurrency, quantity) -> {
             BigDecimal originalValue = cryptoCurrency.getOriginalValue();
             BigDecimal newValue;
-            // Increase price
             if (random.nextBoolean()){
                 newValue = originalValue.add(BigDecimal.valueOf(random.nextDouble(originalValue.doubleValue() * 0.0012)));
-            // Decrease price
             } else {
                 newValue = originalValue.subtract(BigDecimal.valueOf(random.nextDouble(originalValue.doubleValue() * 0.0004)));
             }

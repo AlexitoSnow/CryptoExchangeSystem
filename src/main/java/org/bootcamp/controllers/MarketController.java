@@ -166,11 +166,9 @@ public class MarketController implements Controller, ExchangeServiceSubscriber {
             BigDecimal originalValue = cryptoCurrency.getOriginalValue();
             BigDecimal currentValue = cryptoCurrency.getCurrentValue();
             BigDecimal differenceValue;
-            // Fluctuación aumentó o se mantuvo
             if (currentValue.compareTo(originalValue) >= 0) {
                 differenceValue = currentValue.subtract(originalValue).setScale(2, RoundingMode.HALF_UP);
                 view.showSuccessMessage("%s (+%s)".formatted(cryptoCurrency, differenceValue));
-            // Fluctuación bajó
             } else {
                 differenceValue = originalValue.subtract(currentValue).setScale(2, RoundingMode.HALF_UP);
                 view.showError("%s (-%s)".formatted(cryptoCurrency, differenceValue));
