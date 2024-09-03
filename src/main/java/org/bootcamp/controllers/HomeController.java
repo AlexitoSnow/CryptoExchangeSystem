@@ -11,12 +11,36 @@ import org.bootcamp.views.TradingServiceSubscriber;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Controller class for managing the home view and user interactions on the home screen.
+ * Implements a singleton pattern to ensure only one instance of HomeController exists.
+ * Subscribes to the trading service for updates.
+ * @see Controller
+ * @see TradingServiceSubscriber
+ * @see TradingService
+ */
 public class HomeController implements Controller, TradingServiceSubscriber {
+    /**
+     * The view associated with the home controller, responsible for user interactions on the home screen.
+     */
     private final HomeView view;
+    /**
+     * The account service used for user authentication and account management.
+     */
     private final AccountService accountService;
+    /**
+     * The trading service used for placing market orders and receiving updates.
+     */
     private final TradingService tradingService;
+    /**
+     * The singleton instance of the HomeController.
+     */
     public static HomeController instance;
 
+    /**
+     * Private constructor for the HomeController. Initializes the view, account service,
+     * and trading service, and subscribes to the trading service for updates.
+     */
     private HomeController() {
         view = new HomeView();
         accountService = AccountService.getInstance();
@@ -24,6 +48,12 @@ public class HomeController implements Controller, TradingServiceSubscriber {
         tradingService.subscribe(this);
     }
 
+    /**
+     * Returns the singleton instance of the HomeController. If the instance does not exist,
+     * it is created.
+     *
+     * @return the singleton instance of the HomeController
+     */
     public static HomeController getInstance() {
         if (instance == null) {
             instance = new HomeController();
@@ -31,6 +61,10 @@ public class HomeController implements Controller, TradingServiceSubscriber {
         return instance;
     }
 
+    /**
+     * Runs the main loop of the home controller, handling user choices for various actions
+     * such as depositing funds, showing the wallet, viewing transaction history, going to the market, and logging out.
+     */
     @Override
     public void run() {
         int choice = view.getUserChoice();
@@ -56,6 +90,10 @@ public class HomeController implements Controller, TradingServiceSubscriber {
         router.navigateTo(Router.HOME);
     }
 
+    /**
+     * Logs out the current user, shows a success message, unsubscribes from the trading service,
+     * and navigates to the root view.
+     */
     private void logout() {
         accountService.logout();
         view.showSuccessMessage("Logging out...");
@@ -63,6 +101,10 @@ public class HomeController implements Controller, TradingServiceSubscriber {
         router.navigateTo(Router.ROOT);
     }
 
+    /**
+     * Displays the transaction history of the current user. If there are no transactions,
+     * an informational message is shown. Otherwise, the details of each transaction are displayed.
+     */
     private void showTransactionHistory() {
         List<Transaction> transactions = accountService.getCurrentUser().getTransactions();
         if (transactions.isEmpty()){
@@ -73,15 +115,25 @@ public class HomeController implements Controller, TradingServiceSubscriber {
         }
     }
 
+    /**
+     * Navigates to the market view, unsubscribes from the trading service, and updates the router.
+     */
     private void goToMarket() {
         tradingService.unSubscribe(this);
         router.navigateTo(Router.MARKET);
     }
 
+    /**
+     * Displays the current user's wallet information in the view.
+     */
     private void showWallet() {
         view.showWallet(accountService.getCurrentUser().getWallet());
     }
 
+    /**
+     * Handles the deposit action by prompting the user for an amount, validating the input,
+     * updating the user's balance, and displaying the updated wallet information.
+     */
     private void depositAction() {
         BigDecimal amount = view.getAmountMoneyInput();
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -93,6 +145,14 @@ public class HomeController implements Controller, TradingServiceSubscriber {
         }
     }
 
+    /**
+     * Updates the view with the status of completed market orders. If the current user's buy order
+     * is completed, a success message is displayed. Similarly, if the current user's selling order
+     * is completed, a success message is shown.
+     *
+     * @param buyOrder the completed buy order
+     * @param sellingOrder the completed selling order
+     */
     @Override
     public void update(MarketOrder buyOrder, MarketOrder sellingOrder) {
         if (buyOrder.getUser().equals(accountService.getCurrentUser())) {
