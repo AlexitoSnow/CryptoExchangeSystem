@@ -5,15 +5,39 @@ import org.bootcamp.models.User;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The AccountService class provides functionalities to manage user accounts.
+ * It supports user registration, login, and logout operations, and maintains a list of registered users.
+ * This class follows the singleton pattern to ensure only one instance is used throughout the application.
+ */
 public class AccountService {
+    /**
+     * A list of registered users.
+     */
     private final List<User> users;
+    /**
+     * Singleton instance of the AccountService class.
+     */
     private static AccountService instance;
+    /**
+     * The currently logged-in user.
+     */
     private User user;
 
+    /**
+     * Private constructor to initialize the AccountService.
+     * Initializes the list of users.
+     */
     private AccountService() {
         this.users = new ArrayList<>();
     }
 
+    /**
+     * Returns the singleton instance of the AccountService.<br>
+     * If the instance does not exist, it creates a new one.
+     *
+     * @return the singleton instance of AccountService
+     */
     public static AccountService getInstance() {
         if (instance == null) {
             instance = new AccountService();
@@ -22,20 +46,22 @@ public class AccountService {
     }
 
     /**
-     * Retorna el usuario registrado o que ha iniciado sesión recientemente
-     * @return si está registrado, devuelve el usuario, o nulo caso contrario
+     * Returns the currently logged-in user.
+     *
+     * @return the current user
      */
     public User getCurrentUser() {
         return user;
     }
 
     /**
-     * Registra un nuevo usuario con los datos recibidos
-     * @param name del nuevo usuario
-     * @param email del nuevo usuario, no debe estar en uso
-     * @param password del nuevo usuario
-     * @return las credenciales del usuario registrado
-     * @throws AccountServiceException si el correo se encuentra en uso
+     * Registers a new user with the specified name, email, and password.
+     *
+     * @param name the name of the user
+     * @param email the email of the user
+     * @param password the password of the user
+     * @return the newly registered user
+     * @throws AccountServiceException if the email is already in use
      */
     public User registerUser(String name, String email, String password) throws AccountServiceException {
         for (User user : users) {
@@ -50,10 +76,12 @@ public class AccountService {
     }
 
     /**
-     * Inicia sesión en la cuenta con el correo y contraseña ingresados
-     * @param email del usuario previamente registrado
-     * @param password del usuario previamente registrado
-     * @return el usuario registrado, o null si no se encuentra
+     * Logs in a user with the specified email and password.
+     *
+     * @param email the email of the user
+     * @param password the password of the user
+     * @return the logged-in user
+     * @throws AccountServiceException if the user is not found
      */
     public User login(String email, String password) throws AccountServiceException {
         int index = users.indexOf(new User("temp", email, password));
@@ -64,6 +92,9 @@ public class AccountService {
         throw new AccountServiceException("User not found");
     }
 
+    /**
+     * Logs out the current user.
+     */
     public void logout() {
         user = null;
     }
