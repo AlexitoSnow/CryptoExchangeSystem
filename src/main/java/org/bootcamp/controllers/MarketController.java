@@ -4,7 +4,7 @@ import org.bootcamp.Router;
 import org.bootcamp.models.*;
 import org.bootcamp.services.AccountService;
 import org.bootcamp.services.AccountServiceException;
-import org.bootcamp.services.CryptoCurrencyService;
+import org.bootcamp.services.ExchangeService;
 import org.bootcamp.services.TradingService;
 import org.bootcamp.views.ExchangeServiceSubscriber;
 import org.bootcamp.views.MarketView;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public class MarketController implements Controller, ExchangeServiceSubscriber {
     private final MarketView view;
-    private final CryptoCurrencyService cryptoCurrencyService;
+    private final ExchangeService exchangeService;
     private final TradingService tradingService;
     private final AccountService accountService;
     private boolean showNotifications;
@@ -24,7 +24,7 @@ public class MarketController implements Controller, ExchangeServiceSubscriber {
 
     private MarketController() {
         view = new MarketView();
-        cryptoCurrencyService = CryptoCurrencyService.getInstance();
+        exchangeService = ExchangeService.getInstance();
         accountService = AccountService.getInstance();
         tradingService = TradingService.getInstance();
     }
@@ -62,17 +62,17 @@ public class MarketController implements Controller, ExchangeServiceSubscriber {
     }
 
     private void back() {
-        cryptoCurrencyService.unSubscribe(this);
+        exchangeService.unSubscribe(this);
         router.navigateTo(Router.HOME);
     }
 
     private void toggleNotifications() {
         showNotifications = !showNotifications;
         if (showNotifications) {
-            cryptoCurrencyService.subscribe(this);
+            exchangeService.subscribe(this);
             view.showInfo("Fluctuations notifications: ON");
         } else {
-            cryptoCurrencyService.unSubscribe(this);
+            exchangeService.unSubscribe(this);
             view.showInfo("Fluctuations notifications: OFF");
         }
     }
@@ -87,7 +87,7 @@ public class MarketController implements Controller, ExchangeServiceSubscriber {
             BigDecimal quantity = view.getQuantityCryptoCurrencyInput();
             if (quantity.compareTo(BigDecimal.ZERO) > 0) {
                 try {
-                    cryptoCurrencyService.buyFromExchange(user, selected, quantity);
+                    exchangeService.buyFromExchange(user, selected, quantity);
                     view.showSuccessMessage("+" + quantity + " " + selected.getShorthandSymbol() + " added successfully");
                 } catch (CryptoCurrencyException | AccountServiceException e) {
                     view.showError(e.getMessage());
