@@ -1,27 +1,38 @@
 package org.bootcamp.controllers;
 
 import org.bootcamp.Router;
+import org.bootcamp.models.MarketOrder;
 import org.bootcamp.models.Transaction;
 import org.bootcamp.services.AccountService;
+import org.bootcamp.services.TradingService;
 import org.bootcamp.views.HomeView;
+import org.bootcamp.views.TradingServiceSubscriber;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class HomeController implements Controller, TradingServiceSubscriber {
     private final HomeView view;
-    private final AccountService service;
+    private final AccountService accountService;
+    private final TradingService tradingService;
+    public static HomeController instance;
 
-    public HomeController() {
+    private HomeController() {
         view = new HomeView();
-        service = AccountService.getInstance();
+        accountService = AccountService.getInstance();
+        tradingService = TradingService.getInstance();
+        tradingService.subscribe(this);
+    }
+
+    public static HomeController getInstance() {
+        if (instance == null) {
+            instance = new HomeController();
+        }
+        return instance;
     }
 
     @Override
     public void run() {
-        view.showSuccessMessage("Welcome back, " + service.getCurrentUser().getName() + '!');
         int choice = view.getUserChoice();
         switch (choice) {
             case 1:
@@ -34,34 +45,26 @@ public class HomeController implements Controller, TradingServiceSubscriber {
                 showTransactionHistory();
                 break;
             case 4:
-                //Buy from exchange
-                marketAction(0);
+                goToMarket();
                 break;
             case 5:
-                //Buy order
-                marketAction(1);
-                break;
-            case 6:
-                //Selling order
-                marketAction(2);
-                break;
-            case 7:
                 logout();
                 break;
             default:
                 view.showError("Invalid option. Please try again.");
         }
-        Router.navigateTo(Router.HOME);
+        router.navigateTo(Router.HOME);
     }
 
     private void logout() {
-        service.logout();
+        accountService.logout();
         view.showSuccessMessage("Logging out...");
-        Router.navigateTo(Router.ROOT);
+        tradingService.unSubscribe(this);
+        router.navigateTo(Router.ROOT);
     }
 
     private void showTransactionHistory() {
-        List<Transaction> transactions = service.getCurrentUser().getTransactions();
+        List<Transaction> transactions = accountService.getCurrentUser().getTransactions();
         if (transactions.isEmpty()){
             view.showInfo("You don't have transactions yet!");
         } else {
@@ -70,14 +73,13 @@ public class HomeController implements Controller, TradingServiceSubscriber {
         }
     }
 
-    private void marketAction(int marketAction) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("marketAction", marketAction);
-        Router.navigateTo(Router.MARKET, parameters);
+    private void goToMarket() {
+        tradingService.unSubscribe(this);
+        router.navigateTo(Router.MARKET);
     }
 
     private void showWallet() {
-        view.showWallet(service.getCurrentUser().getWallet());
+        view.showWallet(accountService.getCurrentUser().getWallet());
     }
 
     private void depositAction() {
@@ -85,9 +87,22 @@ public class HomeController implements Controller, TradingServiceSubscriber {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             view.showError("Enter positive numbers only");
         } else {
-            service.getCurrentUser().depositFiatMoney(amount);
+            accountService.getCurrentUser().depositFiatMoney(amount);
             view.showSuccessMessage("Balance updated!");
             showWallet();
         }
     }
+
+    @Override
+    public void update(MarketOrder buyOrder, MarketOrder sellingOrder) {
+        if (buyOrder.getUser().equals(accountService.getCurrentUser())) {
+            view.showSuccessMessage("Congrats, your buy order " + buyOrder.getOrderID() + " is completed");
+            view.showSuccessMessage("Check your wallet!");
+        }
+        if (sellingOrder.getUser().equals(accountService.getCurrentUser())) {
+            view.showSuccessMessage("Congrats, your selling order " + sellingOrder.getOrderID() + " is completed");
+            view.showSuccessMessage("Check your wallet!");
+        }
+    }
+
 }
