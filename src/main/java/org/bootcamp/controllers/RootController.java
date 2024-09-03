@@ -6,7 +6,7 @@ import org.bootcamp.services.AccountService;
 import org.bootcamp.services.AccountServiceException;
 import org.bootcamp.views.RootView;
 
-public class RootController extends Controller {
+public class RootController implements Controller {
     private final RootView view;
     private final AccountService service;
 

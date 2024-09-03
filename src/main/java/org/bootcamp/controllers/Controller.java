@@ -1,7 +1,8 @@
 package org.bootcamp.controllers;
 
-import org.bootcamp.views.View;
+import org.bootcamp.Router;
 
-public abstract class Controller {
-    public abstract void run();
+public interface Controller {
+    Router router = Router.getInstance();
+    void run();
 }
