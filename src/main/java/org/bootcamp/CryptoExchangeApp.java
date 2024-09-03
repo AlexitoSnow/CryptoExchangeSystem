@@ -1,17 +1,15 @@
 package org.bootcamp;
 
-import org.bootcamp.controllers.RootController;
 import org.bootcamp.services.AccountService;
 import org.bootcamp.services.CryptoCurrencyService;
+import org.bootcamp.services.TradingService;
 
 public class CryptoExchangeApp {
-    //TODO: IMPLEMENTAR OBSERVER PARA LAS FLUCTUACIONES
-    //TODO: IMPLEMENTAR STRATEGY PARA LA SELECCIÓN DE OPCIONES
 
     public static void main(String[] args) {
         init();
-        RootController controller = new RootController();
-        controller.run();
+        Router router = Router.getInstance();
+        router.navigateTo(Router.ROOT);
     }
 
     /**
@@ -20,5 +18,6 @@ public class CryptoExchangeApp {
     public static void init() {
         CryptoCurrencyService.getInstance();
         AccountService.getInstance();
+        TradingService.getInstance();
     }
 }
