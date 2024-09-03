@@ -7,10 +7,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * The Wallet class represents a user's wallet that holds fiat money and various cryptocurrencies.<br>
+ * It provides methods to check and manage funds, including adding and subtracting both fiat money and cryptocurrencies.
+ */
 public class Wallet {
     private BigDecimal fiatMoney;
     private final Map<CryptoCurrency, BigDecimal> myCryptoCurrencies;
 
+    /**
+     * Constructs a new Wallet with zero fiat money and initializes the cryptocurrency holdings to zero.
+     * Retrieves the available cryptocurrencies from the ExchangeService.
+     */
     public Wallet() {
         this.fiatMoney = BigDecimal.ZERO;
         this.myCryptoCurrencies = new HashMap<>();
@@ -24,14 +32,32 @@ public class Wallet {
         return myCryptoCurrencies;
     }
 
+    /**
+     * Checks if the wallet has sufficient fiat money for a given amount.
+     *
+     * @param neededMoney the amount of fiat money needed
+     * @return true if the wallet has enough fiat money, false otherwise
+     */
     public boolean checkFunds(BigDecimal neededMoney) {
         return fiatMoney.compareTo(neededMoney) >= 0;
     }
 
+    /**
+     * Checks if the wallet has sufficient cryptocurrency for a given amount.
+     *
+     * @param cryptoCurrency the cryptocurrency to check
+     * @param neededQuantity the amount of cryptocurrency needed
+     * @return true if the wallet has enough of the specified cryptocurrency, false otherwise
+     */
     public boolean checkCryptoFunds(CryptoCurrency cryptoCurrency, BigDecimal neededQuantity) {
         return myCryptoCurrencies.get(cryptoCurrency).compareTo(neededQuantity) >= 0;
     }
 
+    /**
+     * Adds a specified amount of fiat money to the wallet.
+     *
+     * @param value the amount of fiat money to add
+     */
     public void addFiatMoney(BigDecimal value) {
         fiatMoney = fiatMoney.add(value);
     }
@@ -50,9 +76,10 @@ public class Wallet {
     }
 
     /**
-     * Recarga la criptomoneda con el valor indicado
-     * @param cryptoCurrency que se encuentra en la billetera
-     * @param quantity que se añadirá a la billetera
+     * Recharges the specified quantity of a cryptocurrency in the wallet.
+     *
+     * @param cryptoCurrency the cryptocurrency to be recharged
+     * @param quantity the quantity of cryptocurrency to add
      */
     public void rechargeCryptoCurrency(CryptoCurrency cryptoCurrency, BigDecimal quantity) {
         BigDecimal currentQuantity = myCryptoCurrencies.get(cryptoCurrency);
@@ -63,10 +90,11 @@ public class Wallet {
     }
 
     /**
-     * Descuenta el valor indicado para la criptomoneda correspondiente
-     * @param cryptoCurrency que se encuentra en la billetera
-     * @param quantity que se descontará de la billetera
-     * @return true Si la criptomoneda estaba presente, false caso contrario
+     * Subtracts the specified quantity of a cryptocurrency from the wallet if sufficient funds are available.
+     *
+     * @param cryptoCurrency the cryptocurrency to be subtracted
+     * @param quantity the quantity of cryptocurrency to subtract
+     * @return true if the subtraction was successful, false otherwise
      */
     public boolean subtractCryptoCurrency(CryptoCurrency cryptoCurrency, BigDecimal quantity) {
         if (checkCryptoFunds(cryptoCurrency, quantity)) {

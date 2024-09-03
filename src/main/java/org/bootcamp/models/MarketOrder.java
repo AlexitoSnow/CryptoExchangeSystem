@@ -4,6 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Represents a market order in the system. Each market order includes the type of order
+ * (selling or buying), the user who placed the order, the cryptocurrency involved, the amount,
+ * the price, and the date and time the order was created. A unique order ID is generated based
+ * on the order type, cryptocurrency, and timestamp.
+ */
 public class MarketOrder {
     private final OrderType orderType;
     private final User user;
@@ -13,6 +19,15 @@ public class MarketOrder {
     private String orderID;
     private final LocalDateTime dateTime;
 
+    /**
+     * Constructor for the MarketOrder
+     *
+     * @param orderType the type of order (SELLING or BUY)
+     * @param user the user who placed the order
+     * @param cryptoCurrency the type of cryptocurrency involved in the order
+     * @param amount the amount of cryptocurrency involved in the order
+     * @param price the price of the cryptocurrency at the time of the order
+     */
     public MarketOrder(OrderType orderType, User user, CryptoCurrency cryptoCurrency, BigDecimal amount, BigDecimal price) {
         this.orderType = orderType;
         this.user = user;
@@ -47,6 +62,10 @@ public class MarketOrder {
         return price;
     }
 
+    /**
+     * Generates a unique order ID based on the order type, cryptocurrency, and current timestamp.
+     * The order ID is a combination of the order type name, cryptocurrency shorthand symbol, and timestamp.
+     */
     private void generateOrderID() {
         orderID = orderType.name() + "@" + cryptoCurrency.getShorthandSymbol() + "@" + dateTime.toString();
     }

@@ -4,6 +4,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
 
+/**
+ * Represents a cryptocurrency with a display name, shorthand symbol, original value, and current value.<br>
+ * Each cryptocurrency has a unique ID generated based on its shorthand symbol.
+ * @see org.bootcamp.services.ExchangeService
+ * @see org.bootcamp.services.TradingService
+ */
 public final class CryptoCurrency {
     private String cryptoID;
     private final String displayName;
@@ -11,6 +17,14 @@ public final class CryptoCurrency {
     private BigDecimal currentValue;
     private final BigDecimal originalValue;
 
+    /**
+     * Constructs a new CryptoCurrency with the specified display name, shorthand symbol, and original value.
+     * Initializes the current value to the original value and generates a unique cryptocurrency ID.
+     *
+     * @param displayName the display name of the cryptocurrency
+     * @param shorthandSymbol the shorthand symbol of the cryptocurrency
+     * @param originalValue the original value of the cryptocurrency
+     */
     public CryptoCurrency(String displayName, String shorthandSymbol, BigDecimal originalValue) {
         this.displayName = displayName;
         this.originalValue = originalValue;
@@ -19,6 +33,9 @@ public final class CryptoCurrency {
         generateCryptoID();
     }
 
+    /**
+     * Generates a unique cryptocurrency ID based on the shorthand symbol and its hash code.
+     */
     private void generateCryptoID() {
         cryptoID = shorthandSymbol + '@' + shorthandSymbol.hashCode();
     }
@@ -39,6 +56,11 @@ public final class CryptoCurrency {
         return shorthandSymbol;
     }
 
+    /**
+     * Updates the current value of the cryptocurrency to the specified new value.
+     *
+     * @param newValue the new value of the cryptocurrency
+     */
     public void updateCurrentValue(BigDecimal newValue) {
         currentValue = newValue;
     }
