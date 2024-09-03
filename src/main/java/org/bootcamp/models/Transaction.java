@@ -28,30 +28,6 @@ public class Transaction {
         transactionID = epochSecond + "@" + action.name() + "@" + cryptoCurrency.getShorthandSymbol();
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
-    }
-
-    public TransactionAction getAction() {
-        return action;
-    }
-
-    public CryptoCurrency getCryptoCurrency() {
-        return cryptoCurrency;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public String getTransactionID() {
-        return transactionID;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,7 +45,7 @@ public class Transaction {
         return String.format("%s\t %s\t %s\t %s",
                 action.name(),
                 cryptoCurrency.getShorthandSymbol(),
-                amount.setScale(2, RoundingMode.HALF_UP).toString(),
-                price.setScale(2, RoundingMode.HALF_UP).toString());
+                amount.setScale(2, RoundingMode.HALF_UP),
+                price.setScale(2, RoundingMode.HALF_UP));
     }
 }

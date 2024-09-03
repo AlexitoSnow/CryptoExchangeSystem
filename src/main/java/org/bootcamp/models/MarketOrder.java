@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class MarketOrder implements Comparable {
+public class MarketOrder {
     private final OrderType orderType;
     private final User user;
     private final CryptoCurrency cryptoCurrency;
@@ -68,10 +68,5 @@ public class MarketOrder implements Comparable {
     @Override
     public int hashCode() {
         return Objects.hashCode(orderID);
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return dateTime.compareTo(((MarketOrder) o).dateTime);
     }
 }

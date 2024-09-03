@@ -8,11 +8,11 @@ import org.bootcamp.views.RootView;
 
 public class RootController implements Controller {
     private final RootView view;
-    private final AccountService service;
+    private final AccountService accountService;
 
     public RootController() {
         this.view = new RootView();
-        service = AccountService.getInstance();
+        accountService = AccountService.getInstance();
     }
 
     public void run() {
@@ -29,7 +29,7 @@ public class RootController implements Controller {
                 System.exit(0);
             default:
                 view.showError("Invalid option. Please try again.");
-                Router.navigateTo(Router.ROOT);
+                router.navigateTo(Router.ROOT);
         }
     }
 
@@ -38,14 +38,14 @@ public class RootController implements Controller {
         String email = view.getEmailInput().trim();
         String password = view.getPasswordInput().trim();
         try {
-            User verified = service.registerUser(name, email, password);
+            User verified = accountService.registerUser(name, email, password);
             if (verified != null) {
                 view.showSuccessMessage("Usuario registrado exitosamente");
-                Router.navigateTo(Router.HOME);
+                router.navigateTo(Router.HOME);
             }
         } catch (AccountServiceException e) {
             view.showError(e.getMessage());
-            Router.navigateTo(Router.ROOT);
+            router.navigateTo(Router.ROOT);
         }
     }
 
@@ -54,16 +54,15 @@ public class RootController implements Controller {
         String password = view.getPasswordInput().trim();
         User user = null;
         try {
-            user = service.login(email, password);
+            user = accountService.login(email, password);
         } catch (AccountServiceException e) {
             view.showError(e.getMessage());
         }
         if (user != null) {
             view.showSuccessMessage("Logged as " + user.getEmail());
-            Router.navigateTo(Router.HOME);
+            router.navigateTo(Router.HOME);
         } else {
-            Router.navigateTo(Router.ROOT);
+            router.navigateTo(Router.ROOT);
         }
     }
-
 }
